@@ -76,6 +76,12 @@
   }
 }
 
+/* Giriş ekranı sıralı fade-in animasyonu */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+
 /* Görsel olarak gizli ama ekran okuyucuya/forma açık (honeypot) */
 .visually-hidden {
   position: absolute !important;

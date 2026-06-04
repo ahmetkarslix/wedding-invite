@@ -1,5 +1,6 @@
 import { EVENTS } from "@/lib/events";
 import { MUSIC } from "@/lib/config";
+import { IntroScreen } from "@/components/IntroScreen";
 import { Hero } from "@/components/Hero";
 import { Countdown } from "@/components/Countdown";
 import { Families } from "@/components/Families";
@@ -16,6 +17,7 @@ const heading =
 export default function Home() {
   return (
     <>
+      <IntroScreen />
       {MUSIC.enabled && <MusicToggle src={MUSIC.src} />}
 
       <Hero />
