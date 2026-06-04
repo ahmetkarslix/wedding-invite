@@ -65,7 +65,7 @@ export function EventRsvpFieldset({
       {attending === "yes" && (
         <div className="mt-5 flex flex-col gap-3">
           <span id={guestsLabelId} className="font-body text-xs uppercase tracking-[0.18em] text-muted">
-            Kaç kişi katılacaksınız?
+            Siz dahil kaç kişi olacaksınız?
           </span>
           <GuestStepper value={count} onChange={setCount} labelId={guestsLabelId} />
         </div>
