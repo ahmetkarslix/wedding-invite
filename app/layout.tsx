@@ -27,6 +27,7 @@ const jost = Jost({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://seher-ahmet.vercel.app"),
   title: SITE.title,
   description: SITE.description,
   openGraph: {
