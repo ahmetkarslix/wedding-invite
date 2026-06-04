@@ -69,8 +69,13 @@ export async function submitRsvp(
     };
   }
 
-  // 5) Satırları hazırla (etkinlik başına bir satır, ortak submission_id)
+  // 5) İsim anahtarı: Türkçe büyük/küçük harf duyarsız eşleştirme
+  //    "AhMeT kArSlı" → "ahmet karslı" (aynı kişi olarak tanınır)
   const data = parsed.data;
+  const nameKey = data.fullName
+    .toLocaleLowerCase("tr")
+    .replace(/\s+/g, " ")
+    .trim();
   const submissionId = crypto.randomUUID();
   const rows = (["van", "usak"] as const).map((id: EventId) => {
     const r = data[id];
@@ -78,6 +83,7 @@ export async function submitRsvp(
     return {
       submission_id: submissionId,
       full_name: data.fullName,
+      name_key: nameKey,
       event_id: id,
       attending,
       guest_count: attending ? Math.max(1, r.guestCount) : 0,
@@ -85,9 +91,20 @@ export async function submitRsvp(
     };
   });
 
-  // 6) Kaydet
+  // 6) Kaydet — aynı isimle daha önce yanıt verildiyse eskisini sil (güncelle)
   try {
     const supabase = getSupabaseAdmin();
+
+    // Aynı kişinin önceki yanıtlarını sil
+    const { data: deleted } = await supabase
+      .from("rsvps")
+      .delete()
+      .eq("name_key", nameKey)
+      .select("id");
+
+    const isUpdate = (deleted?.length ?? 0) > 0;
+
+    // Yeni yanıtları ekle
     const { error } = await supabase.from("rsvps").insert(rows);
     if (error) {
       return {
@@ -95,15 +112,17 @@ export async function submitRsvp(
         message: "Yanıtınız kaydedilemedi. Lütfen biraz sonra tekrar deneyin.",
       };
     }
+
+    return {
+      ok: true,
+      message: isUpdate
+        ? "Yanıtınız güncellendi! Teşekkürler. 💛"
+        : "Teşekkürler! Katılım yanıtınız bize ulaştı. 💛",
+    };
   } catch {
     return {
       ok: false,
       message: "Sunucu yapılandırması tamamlanmamış. Lütfen daha sonra tekrar deneyin.",
     };
   }
-
-  return {
-    ok: true,
-    message: "Teşekkürler! Katılım yanıtınız bize ulaştı. 💛",
-  };
 }
