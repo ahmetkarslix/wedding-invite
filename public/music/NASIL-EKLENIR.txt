@@ -1,0 +1,13 @@
+ARKA PLAN MÜZİĞİ NASIL EKLENİR
+==============================
+
+1. Bir müzik dosyasını (örn. track.mp3) bu klasöre kopyalayın.
+2. lib/config.ts dosyasını açın ve şu satırı güncelleyin:
+
+   export const MUSIC = {
+     enabled: true,                 // false -> true
+     src: "/music/track.mp3",       // dosya adınızla eşleşmeli
+   } as const;
+
+3. Kaydedin. Sağ alt köşede aç/kapa düğmesi görünür.
+   (Tarayıcılar otomatik sesli oynatmaya izin vermez; ziyaretçi düğmeye basınca çalar.)
