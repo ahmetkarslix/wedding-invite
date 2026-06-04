@@ -9,6 +9,6 @@ export const SITE = {
 // Arka plan müziği — şimdilik kapalı.
 // Açmak için: bir .mp3 dosyasını public/music/ içine koy, src'yi güncelle, enabled: true yap.
 export const MUSIC = {
-  enabled: false,
+  enabled: true,
   src: "/music/track.mp3",
 } as const;
