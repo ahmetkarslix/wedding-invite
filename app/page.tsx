@@ -1,4 +1,4 @@
-import { EVENTS, FIRST_EVENT } from "@/lib/events";
+import { EVENTS } from "@/lib/events";
 import { MUSIC } from "@/lib/config";
 import { Hero } from "@/components/Hero";
 import { Countdown } from "@/components/Countdown";
@@ -20,18 +20,27 @@ export default function Home() {
 
       <Hero />
 
-      {/* Geri sayım */}
+      {/* Geri sayım — her iki düğün */}
       <section id="geri-sayim" className="px-6 py-16 sm:py-20">
         <Reveal className="mx-auto max-w-3xl text-center">
-          <p className={kicker}>Büyük güne</p>
+          <p className={kicker}>Büyük günlere</p>
           <h2 className={heading}>Geri Sayım</h2>
-          <p className="mt-4 font-body text-sm font-light text-ink-soft">
-            {FIRST_EVENT.dateLabel} · {FIRST_EVENT.dayLabel} · {FIRST_EVENT.city}
-          </p>
-          <div className="mt-8">
-            <Countdown targetIso={FIRST_EVENT.isoStart} />
-          </div>
         </Reveal>
+        <div className="mx-auto mt-10 grid max-w-3xl grid-cols-1 gap-10 sm:grid-cols-2">
+          {EVENTS.map((event, i) => (
+            <Reveal key={event.id} delay={i * 120} className="text-center">
+              <p className="font-body text-xs font-light uppercase tracking-[0.25em] text-muted">
+                {event.kicker} — {event.city}
+              </p>
+              <p className="mt-1 font-body text-sm font-light text-ink-soft">
+                {event.dateLabel} · {event.dayLabel}
+              </p>
+              <div className="mt-5">
+                <Countdown targetIso={event.isoStart} />
+              </div>
+            </Reveal>
+          ))}
+        </div>
       </section>
 
       <SectionDivider className="py-2" />
