@@ -1,12 +1,48 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-// İzole arka plan müziği aç/kapa düğmesi. Asla otomatik sesli başlatmaz
-// (tarayıcılar engeller ve kötü deneyimdir) — kullanıcı tıklamasıyla çalar.
+// Müzik varsayılan AÇIK gelir. Tarayıcılar sesli autoplay'i engellediği için
+// kullanıcının ilk etkileşiminde (dokunma/kaydırma/tıklama) otomatik başlar.
+// Ziyaretçi isterse sağ alttaki butonla kapatabilir.
 export function MusicToggle({ src }: { src: string }) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [playing, setPlaying] = useState(false);
+  const [playing, setPlaying] = useState(true);
+  const triedAutoplay = useRef(false);
+
+  const tryPlay = async () => {
+    const audio = audioRef.current;
+    if (!audio || audio.currentTime > 0) return;
+    try {
+      await audio.play();
+      setPlaying(true);
+    } catch {
+      // Tarayıcı engelledi — ilk etkileşimde tekrar denenecek
+    }
+  };
+
+  useEffect(() => {
+    if (triedAutoplay.current) return;
+    triedAutoplay.current = true;
+
+    // Sayfa yüklenince otomatik başlatmayı dene
+    tryPlay();
+
+    // Tarayıcı engellerse, ilk kullanıcı etkileşiminde başlat
+    const onInteraction = () => {
+      tryPlay();
+      cleanup();
+    };
+
+    const events = ["click", "touchstart", "scroll", "keydown"] as const;
+    for (const e of events) document.addEventListener(e, onInteraction, { once: true, passive: true });
+
+    const cleanup = () => {
+      for (const e of events) document.removeEventListener(e, onInteraction);
+    };
+
+    return cleanup;
+  }, []);
 
   const toggle = async () => {
     const audio = audioRef.current;
@@ -26,7 +62,7 @@ export function MusicToggle({ src }: { src: string }) {
 
   return (
     <>
-      <audio ref={audioRef} src={src} loop preload="none" />
+      <audio ref={audioRef} src={src} loop preload="auto" />
       <button
         type="button"
         onClick={toggle}
