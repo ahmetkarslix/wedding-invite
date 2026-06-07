@@ -1,31 +1,22 @@
 import { ImageResponse } from "next/og";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 
-export const runtime = "edge";
+// WhatsApp / sosyal medya paylaşım önizleme görseli (og:image).
+// Fontlar YERELDEN gömülür — çalışma anında ağ gerekmez, Türkçe karakterler garanti.
+export const runtime = "nodejs";
 export const alt = "Seher & Ahmet — Düğün Davetiyesi";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-export default async function OGImage() {
-  // Google Fonts'tan Jost Light yükle (OG görseldeki metin için)
-  let jostData: ArrayBuffer | undefined;
-  try {
-    const css = await fetch(
-      "https://fonts.googleapis.com/css2?family=Jost:wght@300",
-      {
-        headers: {
-          "User-Agent":
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
-        },
-      },
-    ).then((r) => r.text());
-    const url = css.match(
-      /url\((https:\/\/fonts\.gstatic\.com\/[^)]+)\)/,
-    )?.[1];
-    if (url) jostData = await fetch(url).then((r) => r.arrayBuffer());
-  } catch {
-    /* font yüklenemezse varsayılan kullanılır */
-  }
+const greatVibes = readFileSync(
+  join(process.cwd(), "assets/fonts/GreatVibes-Regular.ttf"),
+);
+const marcellus = readFileSync(
+  join(process.cwd(), "assets/fonts/Marcellus-Regular.ttf"),
+);
 
+export default function OpengraphImage() {
   return new ImageResponse(
     (
       <div
@@ -37,10 +28,9 @@ export default async function OGImage() {
           justifyContent: "center",
           backgroundColor: "#FBF8F1",
           color: "#1A1714",
-          fontFamily: "Jost, serif",
+          fontFamily: "Marcellus",
         }}
       >
-        {/* İnce kenarlıklı kart */}
         <div
           style={{
             display: "flex",
@@ -48,118 +38,74 @@ export default async function OGImage() {
             alignItems: "center",
             justifyContent: "center",
             border: "1.5px solid #E7E0D4",
-            padding: "56px 100px",
-            gap: "0",
+            padding: "48px 110px",
           }}
         >
-          {/* DAVETLİSİNİZ */}
-          <p
-            style={{
-              fontSize: 16,
-              letterSpacing: "0.55em",
-              fontWeight: 300,
-              color: "#4A453E",
-              margin: 0,
-            }}
-          >
+          <div style={{ fontSize: 22, letterSpacing: 11, color: "#4A453E" }}>
             DAVETLİSİNİZ
-          </p>
+          </div>
 
-          {/* İsimler */}
-          <p
+          <div
             style={{
-              fontSize: 80,
-              fontWeight: 300,
-              margin: "20px 0 0 0",
-              lineHeight: 1.1,
+              fontFamily: "Great Vibes",
+              fontSize: 110,
+              lineHeight: 1,
+              marginTop: 18,
             }}
           >
             Seher
-          </p>
-          <p
+          </div>
+          <div
             style={{
-              fontSize: 36,
+              fontFamily: "Great Vibes",
+              fontSize: 56,
               color: "#9A8A6B",
-              margin: "4px 0",
-              fontWeight: 300,
+              marginTop: 2,
+              marginBottom: 2,
             }}
           >
             &
-          </p>
-          <p
+          </div>
+          <div
             style={{
-              fontSize: 80,
-              fontWeight: 300,
-              margin: "0 0 24px 0",
-              lineHeight: 1.1,
+              fontFamily: "Great Vibes",
+              fontSize: 110,
+              lineHeight: 1,
+              marginBottom: 26,
             }}
           >
             Ahmet
-          </p>
+          </div>
 
-          {/* Dekoratif çizgi */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "16px",
-            }}
-          >
-            <div
-              style={{
-                width: 50,
-                height: 1,
-                backgroundColor: "#E7E0D4",
-              }}
-            />
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <div style={{ width: 54, height: 1, backgroundColor: "#E7E0D4" }} />
             <div
               style={{
                 width: 6,
                 height: 6,
+                borderRadius: 6,
                 backgroundColor: "#9A8A6B",
-                borderRadius: "50%",
+                margin: "0 16px",
               }}
             />
-            <div
-              style={{
-                width: 50,
-                height: 1,
-                backgroundColor: "#E7E0D4",
-              }}
-            />
+            <div style={{ width: 54, height: 1, backgroundColor: "#E7E0D4" }} />
           </div>
 
-          {/* Tarih ve şehirler */}
-          <p
-            style={{
-              fontSize: 20,
-              letterSpacing: "0.2em",
-              fontWeight: 300,
-              color: "#4A453E",
-              margin: "24px 0 0 0",
-            }}
-          >
+          <div style={{ fontSize: 28, letterSpacing: 3, color: "#4A453E", marginTop: 26 }}>
             18 & 26 Eylül 2026
-          </p>
-          <p
-            style={{
-              fontSize: 14,
-              letterSpacing: "0.4em",
-              fontWeight: 300,
-              color: "#8A8175",
-              margin: "10px 0 0 0",
-            }}
-          >
+          </div>
+          <div style={{ fontSize: 17, letterSpacing: 9, color: "#8A8175", marginTop: 12 }}>
             VAN & UŞAK
-          </p>
+          </div>
         </div>
       </div>
     ),
     {
       ...size,
-      fonts: jostData
-        ? [{ name: "Jost", data: jostData, style: "normal" as const, weight: 300 as const }]
-        : [],
+      fonts: [
+        { name: "Great Vibes", data: greatVibes, weight: 400, style: "normal" },
+        { name: "Marcellus", data: marcellus, weight: 400, style: "normal" },
+      ],
     },
   );
 }
