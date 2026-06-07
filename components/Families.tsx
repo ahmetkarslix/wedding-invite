@@ -1,11 +1,12 @@
 import { Reveal } from "./Reveal";
+import { ScrollCue } from "./ScrollCue";
 
 // Aileler — davetiyedeki gibi iki isim, kalbin altında.
 const FAMILIES = ["Esma & Mehmet Kılınçarslan", "Semra & Erhan Karslı"];
 
 export function Families() {
   return (
-    <section className="px-6 py-16 sm:py-20">
+    <section id="aileler" className="px-6 py-16 sm:py-20">
       <Reveal className="text-center">
         <p className="font-body text-xs font-light uppercase tracking-[0.35em] text-muted">
           Sizleri davet etmenin mutluluğuyla
@@ -23,6 +24,7 @@ export function Families() {
           ))}
         </div>
       </Reveal>
+      <ScrollCue href="#etkinlikler" />
     </section>
   );
 }

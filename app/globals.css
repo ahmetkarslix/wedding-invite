@@ -82,6 +82,23 @@
   to { opacity: 1; transform: none; }
 }
 
+/* "Aşağı kaydır" oku — dikkat çekmek için hafif zıplama */
+@keyframes bounce-down {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
+}
+
+.scroll-cue {
+  display: inline-flex;
+  animation: bounce-down 1.8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-cue {
+    animation: none;
+  }
+}
+
 /* Görsel olarak gizli ama ekran okuyucuya/forma açık (honeypot) */
 .visually-hidden {
   position: absolute !important;

@@ -8,6 +8,7 @@ import { EventCard } from "@/components/EventCard";
 import { RsvpForm } from "@/components/RsvpForm";
 import { Reveal } from "@/components/Reveal";
 import { SectionDivider } from "@/components/SectionDivider";
+import { ScrollCue } from "@/components/ScrollCue";
 import { MusicToggle } from "@/components/MusicToggle";
 
 const kicker = "font-body text-xs font-light uppercase tracking-[0.35em] text-muted";
@@ -43,6 +44,7 @@ export default function Home() {
             </Reveal>
           ))}
         </div>
+        <ScrollCue href="#aileler" />
       </section>
 
       <SectionDivider className="py-2" />
@@ -64,6 +66,7 @@ export default function Home() {
             </Reveal>
           ))}
         </div>
+        <ScrollCue href="#katilim" />
       </section>
 
       <SectionDivider className="py-2" />
