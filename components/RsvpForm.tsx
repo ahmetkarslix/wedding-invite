@@ -1,8 +1,8 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState, type FormEvent } from "react";
 import { submitRsvp } from "@/app/actions/rsvp";
-import type { RsvpState } from "@/lib/rsvpSchema";
+import { validateFullName, type RsvpState } from "@/lib/rsvpSchema";
 import { getEvent } from "@/lib/events";
 import { EventRsvpFieldset } from "./EventRsvpFieldset";
 
@@ -15,6 +15,30 @@ function eventSubtitle(id: "van" | "usak"): string {
 
 export function RsvpForm() {
   const [state, formAction, pending] = useActionState(submitRsvp, initialState);
+
+  const [name, setName] = useState("");
+  const [nameTouched, setNameTouched] = useState(false);
+  const [nameError, setNameError] = useState<string | null>(null);
+
+  // Kullanıcı alana dokunduysa client doğrulaması; dokunmadıysa sunucu hatası.
+  const displayedNameError = nameTouched ? nameError : (state.errors?.fullName ?? null);
+
+  function onNameChange(value: string) {
+    setName(value);
+    if (nameTouched) setNameError(validateFullName(value));
+  }
+
+  function onNameBlur() {
+    setNameTouched(true);
+    setNameError(validateFullName(name));
+  }
+
+  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    const err = validateFullName(name);
+    setNameTouched(true);
+    setNameError(err);
+    if (err) e.preventDefault(); // geçersiz isimde gönderimi engelle
+  }
 
   if (state.ok) {
     return (
@@ -35,7 +59,12 @@ export function RsvpForm() {
   }
 
   return (
-    <form action={formAction} className="mx-auto flex max-w-xl flex-col gap-6" noValidate>
+    <form
+      action={formAction}
+      onSubmit={handleSubmit}
+      className="mx-auto flex max-w-xl flex-col gap-6"
+      noValidate
+    >
       {/* Honeypot — gerçek kullanıcılar görmez */}
       <input
         type="text"
@@ -56,12 +85,21 @@ export function RsvpForm() {
           type="text"
           required
           autoComplete="name"
+          value={name}
+          onChange={(e) => onNameChange(e.target.value)}
+          onBlur={onNameBlur}
+          aria-invalid={displayedNameError ? true : undefined}
+          aria-describedby={displayedNameError ? "fullName-error" : undefined}
           placeholder="Adınız ve soyadınız"
-          className="rounded-sm border border-ink/20 bg-paper px-4 py-3 font-body text-ink outline-none transition-colors placeholder:text-muted/70 focus:border-ink focus-visible:ring-2 focus-visible:ring-ink/30"
+          className={`rounded-sm border bg-paper px-4 py-3 font-body text-ink outline-none transition-colors placeholder:text-muted/70 focus-visible:ring-2 ${
+            displayedNameError
+              ? "border-red-500 focus:border-red-500 focus-visible:ring-red-500/30"
+              : "border-ink/20 focus:border-ink focus-visible:ring-ink/30"
+          }`}
         />
-        {state.errors?.fullName && (
-          <p className="font-body text-sm text-red-700" role="alert">
-            {state.errors.fullName}
+        {displayedNameError && (
+          <p id="fullName-error" className="font-body text-sm text-red-700" role="alert">
+            {displayedNameError}
           </p>
         )}
       </div>
